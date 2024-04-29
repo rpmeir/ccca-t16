@@ -40,6 +40,5 @@ test("Não deve criar uma conta para o passageiro se o nome for invalido", async
 		cpf: "87748248800",
 		isPassenger: true
 	};
-	const outputSignup = await signup(input);
-	expect(outputSignup).toBe(-3);
+	await expect(() => signup(input)).rejects.toThrow(new Error("Invalid name"));
 });
