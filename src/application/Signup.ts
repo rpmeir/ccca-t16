@@ -1,9 +1,10 @@
 import crypto from "crypto";
 import { validate } from "./validateCpf";
-import { AccountDAO } from "./resource";
+import { AccountDAO } from "../resources/AccountDAO";
+import { MailerGateway } from "../resources/MailerGateway";
 
 export class Signup {
-	constructor	(readonly accountDAO: AccountDAO) {
+	constructor	(readonly accountDAO: AccountDAO, readonly mailerGateway: MailerGateway) {
 	}
 
 	async execute (input: any): Promise<any> {
@@ -16,18 +17,9 @@ export class Signup {
 		if (!validate(account.cpf)) throw new Error("Invalid cpf");
 		if (account.isDriver && account.carPlate && !account.carPlate.match(/[A-Z]{3}\d{4}/)) throw new Error("Invalid car plate");
 		await this.accountDAO.saveAccount(account);
+		await this.mailerGateway.send(account.email, "Welcome", "Welcome to our platform");
 		return {
 			accountId: account.accountId
 		};
-	}
-};
-
-export class GetAccount {
-	constructor	(readonly accountDAO: AccountDAO) {
-	}
-
-	async execute (input: any): Promise<any> {
-		const account = await this.accountDAO.getAccountById(input.accountId);
-		return account;
 	}
 };

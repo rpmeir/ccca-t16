@@ -1,11 +1,13 @@
 import pgp from "pg-promise";
 
+// Driven/Resource Port
 export interface AccountDAO {
 	getAccountByEmail(email: string): Promise<any>;
 	getAccountById(accountId: string): Promise<any>;
 	saveAccount(account: any): Promise<any>;
 }
 
+// Driven/Resource Adapter
 export class AccountDAODatabase implements AccountDAO {
 
 	async getAccountByEmail(email: string) {
@@ -27,4 +29,26 @@ export class AccountDAODatabase implements AccountDAO {
 		await connection.query("insert into cccat16.account (account_id, name, email, cpf, car_plate, is_passenger, is_driver) values ($1, $2, $3, $4, $5, $6, $7)", [account.accountId, account.name, account.email, account.cpf, account.carPlate, !!account.isPassenger, !!account.isDriver]);
 		await connection.$pool.end();
 	}
+}
+
+// Driven/Resource Adapter
+export class AccountDAOMemory implements AccountDAO {
+	accounts: any[];
+
+	constructor() {
+		this.accounts = [];
+	}
+
+	async getAccountByEmail(email: string): Promise<any> {
+		const account = this.accounts.find((account: any) => account.email === email);
+		return account;
+	}
+	async getAccountById(accountId: string): Promise<any> {
+		const account = this.accounts.find((account: any) => account.accountId === accountId);
+		return account;
+	}
+	async saveAccount(account: any): Promise<void> {
+		this.accounts.push(account);
+	}
+
 }

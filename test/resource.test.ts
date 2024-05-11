@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import { AccountDAODatabase } from "../src/resource";
+import { AccountDAODatabase } from "../src/resources/AccountDAO";
 
 test("Deve salvar um registro na tabela account e consultar por id", async function () {
     const account = {
